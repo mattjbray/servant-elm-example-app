@@ -16,7 +16,8 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      api
   ghc-options:         -Wall
-  exposed-modules:     Api
+  exposed-modules:     Api.Server
+                     , Api.Types
   build-depends:       base >= 4.7 && < 5
                      , servant-server >= 0.5 && < 0.6
                      , stm >= 2.4.4

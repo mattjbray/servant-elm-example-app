@@ -15,9 +15,10 @@ import           Servant                  ((:<|>) ((:<|>)), (:>), Get,
                                            serveDirectory)
 import           Servant.HTML.Lucid       (HTML)
 
-import qualified Api
+import qualified Api.Server
+import qualified Api.Types
 
-type FullApi =  "api" :> Api.Api
+type FullApi =  "api" :> Api.Types.Api
             :<|> Get '[HTML] (Html ())
             :<|> "assets" :> Raw
 
@@ -27,7 +28,7 @@ fullApi = Proxy
 server :: TVar Int -> Server FullApi
 server counter = apiServer :<|> home :<|> assets
   where home = return homePage
-        apiServer = Api.server counter
+        apiServer = Api.Server.server counter
         assets = serveDirectory "frontend/dist"
 
 homePage :: Html ()

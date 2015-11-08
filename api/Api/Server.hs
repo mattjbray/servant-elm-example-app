@@ -1,23 +1,13 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE TypeOperators #-}
-
-module Api
-    ( Api
-    , server
+module Api.Server
+    ( server
     ) where
 
 import           Control.Concurrent.STM (TVar, atomically, readTVar, readTVarIO,
                                          writeTVar)
 import           Control.Monad.IO.Class (liftIO)
-import           Servant                ((:<|>) ((:<|>)), (:>), Get, JSON, Post,
-                                         Server)
+import           Servant                ((:<|>) ((:<|>)), Server)
 
-
-type Counter = Int
-
-
-type Api = "counter" :> "inc" :> Post '[JSON] Counter
-      :<|> "counter" :> Get '[JSON] Counter
+import           Api.Types              (Api)
 
 
 server :: TVar Int -> Server Api
