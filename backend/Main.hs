@@ -6,7 +6,6 @@
 module Main where
 
 import           Control.Concurrent.STM   (TVar, newTVarIO)
-import qualified Lib
 import           Lucid                    (Html, body_, doctypehtml_, head_,
                                            script_, src_, title_)
 import           Network.Wai              (Application)
@@ -16,7 +15,9 @@ import           Servant                  ((:<|>) ((:<|>)), (:>), Get,
                                            serveDirectory)
 import           Servant.HTML.Lucid       (HTML)
 
-type FullApi =  "api" :> Lib.Api
+import qualified Api
+
+type FullApi =  "api" :> Api.Api
             :<|> Get '[HTML] (Html ())
             :<|> "assets" :> Raw
 
@@ -26,7 +27,7 @@ fullApi = Proxy
 server :: TVar Int -> Server FullApi
 server counter = apiServer :<|> home :<|> assets
   where home = return homePage
-        apiServer = Lib.server counter
+        apiServer = Api.server counter
         assets = serveDirectory "frontend/dist"
 
 homePage :: Html ()
