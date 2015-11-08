@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Lib
@@ -6,12 +6,15 @@ module Lib
     , server
     ) where
 
-import Servant ((:>), (:<|>)((:<|>)), Get, Post, JSON, Proxy(Proxy), Server)
+import           Control.Concurrent.STM (TVar, atomically, readTVar, readTVarIO,
+                                         writeTVar)
+import           Control.Monad.IO.Class (liftIO)
+import           Servant                ((:<|>) ((:<|>)), (:>), Get, JSON, Post,
+                                         Server)
 
-import Control.Monad.IO.Class (liftIO)
-import Control.Concurrent.STM (TVar, readTVarIO, writeTVar, atomically, readTVar)
 
 type Counter = Int
+
 
 type Api = "counter" :> "inc" :> Post '[JSON] Counter
       :<|> "counter" :> Get '[JSON] Counter

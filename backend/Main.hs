@@ -5,14 +5,15 @@
 
 module Main where
 
-import Control.Concurrent.STM (TVar, newTVarIO)
+import           Control.Concurrent.STM   (TVar, newTVarIO)
 import qualified Lib
-import           Lucid                    (Html, doctypehtml_, head_,
-                                           script_, src_, title_, body_)
+import           Lucid                    (Html, body_, doctypehtml_, head_,
+                                           script_, src_, title_)
 import           Network.Wai              (Application)
 import           Network.Wai.Handler.Warp (run)
 import           Servant                  ((:<|>) ((:<|>)), (:>), Get,
-                                           Proxy (Proxy), Server, Raw, serve, serveDirectory)
+                                           Proxy (Proxy), Raw, Server, serve,
+                                           serveDirectory)
 import           Servant.HTML.Lucid       (HTML)
 
 type FullApi =  "api" :> Lib.Api
