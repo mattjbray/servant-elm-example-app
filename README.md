@@ -90,7 +90,7 @@ on port 8000.
 * `moduleName` configures the name of the Elm module that will be generated.
   This must match the filepath that the Elm code will be written to, and any
   import statements in your own Elm code using the generated code. In our case
-  we have used `Generated.Elm`.
+  we have used `Generated.Api`.
 
 * `urlPrefix` specifies where the frontend code can connect to the API. In our
   case it is `http://localhost:8000/api`.
