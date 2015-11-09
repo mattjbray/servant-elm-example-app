@@ -44,7 +44,7 @@ app counter = serve fullApi (server counter)
 
 main :: IO ()
 main = do
-  let port = 8000 :: Integer
+  let port = 8000
   counter <- newTVarIO 0
   putStrLn $ "Serving on port " ++ show port ++ "..."
-  run 8000 (app counter)
+  run port (app counter)
