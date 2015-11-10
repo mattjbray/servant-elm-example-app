@@ -120,7 +120,7 @@ TODO
 
 * Demonstrate API endpoints that take parameters and captures.
 * Try to make coupling between components more explicit:
-** port and API prefix must match between `backend` and `code-generator`,
-** Elm module name must match between `Makefile` and `code-generator` and
-   `frontend`,
-** frontend build directory must match between `Makefile` and `backend`.
+  * port and API prefix must match between `backend` and `code-generator`,
+  * Elm module name must match between `Makefile` and `code-generator` and
+    `frontend`,
+  * frontend build directory must match between `Makefile` and `backend`.
