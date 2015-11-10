@@ -70,11 +70,11 @@ state lives in a `TVar Int`, which must be supplied by the user.
 
 ### The backend
 
-[backend/Main.hs](backend/Main.hs) defines a type called `FullApi`, which wraps
+[backend/Main.hs](backend/Main.hs) defines a type called `SiteApi`, which wraps
 our counter API under `/api`, provides an index route and serves assets under
 `/assets`.
 
-The `server` function implements this `FullApi`. It wraps the API server
+The `server` function implements this `SiteApi`. It wraps the API server
 implementation, serves the `frontend/dist` directory as `/assets`, and serves
 a home page.
 

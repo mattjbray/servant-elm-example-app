@@ -18,14 +18,14 @@ import           Servant.HTML.Lucid       (HTML)
 import qualified Api.Server
 import qualified Api.Types
 
-type FullApi =  "api" :> Api.Types.Api
+type SiteApi =  "api" :> Api.Types.Api
             :<|> Get '[HTML] (Html ())
             :<|> "assets" :> Raw
 
-fullApi :: Proxy FullApi
-fullApi = Proxy
+siteApi :: Proxy SiteApi
+siteApi = Proxy
 
-server :: TVar Int -> Server FullApi
+server :: TVar Int -> Server SiteApi
 server counter = apiServer :<|> home :<|> assets
   where home = return homePage
         apiServer = Api.Server.server counter
@@ -40,7 +40,7 @@ homePage =
     body_ (script_ "var elmApp = Elm.fullscreen(Elm.Main)")
 
 app :: TVar Int -> Application
-app counter = serve fullApi (server counter)
+app counter = serve siteApi (server counter)
 
 main :: IO ()
 main = do
