@@ -6,6 +6,7 @@
 module Main where
 
 import           Control.Concurrent.STM   (TVar, newTVarIO)
+import qualified Data.Map.Strict as Map
 import           Lucid                    (Html, body_, doctypehtml_, head_,
                                            script_, src_, title_)
 import           Network.Wai              (Application)
@@ -25,10 +26,10 @@ type SiteApi =  "api" :> Api.Types.Api
 siteApi :: Proxy SiteApi
 siteApi = Proxy
 
-server :: TVar Int -> Server SiteApi
-server counter = apiServer :<|> home :<|> assets
+server :: TVar Api.Types.BookDB -> Server SiteApi
+server bookDb = apiServer :<|> home :<|> assets
   where home = return homePage
-        apiServer = Api.Server.server counter
+        apiServer = Api.Server.server bookDb
         assets = serveDirectory "frontend/dist"
 
 homePage :: Html ()
@@ -39,12 +40,12 @@ homePage =
       script_ [src_ "assets/app.js"] ""
     body_ (script_ "var elmApp = Elm.fullscreen(Elm.Main)")
 
-app :: TVar Int -> Application
-app counter = serve siteApi (server counter)
+app :: TVar Api.Types.BookDB -> Application
+app bookDb = serve siteApi (server bookDb)
 
 main :: IO ()
 main = do
   let port = 8000
-  counter <- newTVarIO 0
+  bookDb <- newTVarIO Map.empty
   putStrLn $ "Serving on port " ++ show port ++ "..."
-  run port (app counter)
+  run port (app bookDb)

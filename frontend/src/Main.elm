@@ -7,7 +7,7 @@ import StartApp
 import Task
 import Json.Decode as Json
 
-import Generated.Api as Api
+import Generated.Api exposing (..)
 
 
 app : StartApp.App Model
@@ -31,17 +31,17 @@ port tasks =
 
 
 type alias Model =
-  { counter : Int }
+  { counter : Counter }
 
 
 init : (Model, Effects Action)
-init = ({ counter = 0 }, Effects.none)
+init = ({ counter = {count=0} }, Effects.none)
 
 
 type Action
   = IncCounter
   | FetchCounter
-  | SetCounter (Maybe Int)
+  | SetCounter (Maybe Counter)
 
 
 update : Action -> Model -> (Model, Effects Action)
@@ -53,14 +53,16 @@ update action model =
     FetchCounter ->
       fetchCounter model
 
-    SetCounter mNewCount ->
-      setCounter mNewCount model
+    SetCounter mNewCounter ->
+      ( {model | counter <- Maybe.withDefault model.counter mNewCounter }
+      , Effects.none
+      )
 
 
 incCounter : Model -> (Model, Effects Action)
 incCounter model =
-  ( { model | counter <- model.counter + 1 }
-  , Api.postCounterInc decodeCounter
+  ( model -- { model | counter <- model.counter + 1 }
+  , postCounterInc
     |> Task.toMaybe
     |> Effects.task
     |> Effects.map SetCounter )
@@ -69,20 +71,10 @@ incCounter model =
 fetchCounter : Model -> (Model, Effects Action)
 fetchCounter model =
   ( model
-  , Api.getCounter decodeCounter
+  , getCounter
     |> Task.toMaybe
     |> Effects.task
     |> Effects.map SetCounter )
-
-
-setCounter : Maybe Int -> Model -> (Model, Effects Action)
-setCounter mNewCount model =
-  ( case mNewCount of
-      Just newCount ->
-        { model | counter <- newCount }
-      Nothing ->
-        model
-  , Effects.none )
 
 
 view : Signal.Address Action -> Model -> Html.Html
@@ -91,7 +83,3 @@ view address model =
               , Html.button [Html.Events.onClick address FetchCounter] [Html.text "refresh"]
               , Html.button [Html.Events.onClick address IncCounter] [Html.text "inc"]
               ]
-
-
-decodeCounter : Json.Decoder Int
-decodeCounter = Json.int

@@ -1,24 +1,26 @@
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Main where
 
-import qualified Data.Text.IO   as TIO
-import           Servant        (Proxy (Proxy))
-import           Servant.JS     (CommonGeneratorOptions,
-                                 defCommonGeneratorOptions, jsForAPI,
-                                 moduleName, urlPrefix)
-import           Servant.JS.Elm (elmJSWith)
+import           Data.Proxy  (Proxy (Proxy))
+import           Elm         (Spec (Spec), specsToDir)
+import           Servant.Elm (ElmOptions (..), defElmImports, defElmOptions,
+                              generateElmForAPIWith)
 
-import qualified Api.Types
+import           Api.Types   (Api)
 
-api :: Proxy Api.Types.Api
-api = Proxy
+elmOpts :: ElmOptions
+elmOpts =
+  defElmOptions
+    { urlPrefix = "http://localhost:8000/api" }
 
-elmOpts :: CommonGeneratorOptions
-elmOpts = defCommonGeneratorOptions
-  { moduleName = "Generated.Api"
-  , urlPrefix = "http://localhost:8000/api"
-  }
+specs :: [Spec]
+specs =
+  [ Spec ["Generated", "Api"] $
+         defElmImports : generateElmForAPIWith elmOpts (Proxy :: Proxy Api)
+  ]
 
 main :: IO ()
-main = TIO.putStr $ jsForAPI api (elmJSWith elmOpts)
+main = specsToDir "frontend/src" specs

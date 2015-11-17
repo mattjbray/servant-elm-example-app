@@ -1,31 +1,20 @@
-module Generated.Api (..) where
-import Http exposing (Error, empty, fromJson, send, defaultSettings, uriEncode, string)
-import Json.Decode
+module Generated.Api where
+
+import Json.Decode exposing (..)
+import Json.Decode.Extra exposing (apply)
+import Http
 import String
-import Task exposing (Task)
-
-postCounterInc : Json.Decode.Decoder a  -> Task Error a
-postCounterInc decoder  =
-  let request =
-        { verb = "POST"
-        , headers =
-            [("Content-Type", "application/json")]
-        , url = "http://localhost:8000/api/counter/inc"
-        , body = empty
-        }
-  in
-      fromJson decoder (send defaultSettings request)
+import Task
 
 
-getCounter : Json.Decode.Decoder a  -> Task Error a
-getCounter decoder  =
+getBooks : Task.Task Http.Error List Book
+getBooks =
   let request =
         { verb = "GET"
-        , headers =
-            [("Content-Type", "application/json")]
-        , url = "http://localhost:8000/api/counter"
-        , body = empty
+        , headers = [("Content-Type", "application/json")]
+        , url = "http://localhost:8000/api/books"
+        , body = Http.empty
         }
-  in
-      fromJson decoder (send defaultSettings request)
-
+  in  Http.fromJson
+        list decodeBook
+        (Http.send Http.defaultSettings request)

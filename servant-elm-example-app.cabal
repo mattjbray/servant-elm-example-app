@@ -18,7 +18,10 @@ library
   ghc-options:         -Wall
   exposed-modules:     Api.Server
                      , Api.Types
-  build-depends:       base >= 4.7 && < 5
+  build-depends:       aeson >= 0.8.0.2
+                     , base >= 4.7 && < 5
+                     , containers >= 0.5.6.2
+                     , elm-export
                      , servant-server >= 0.5 && < 0.6
                      , stm >= 2.4.4
                      , transformers >= 0.4.2.0
@@ -29,6 +32,7 @@ executable backend
   main-is:             Main.hs
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
+                     , containers >= 0.5.6.2
                      , lucid
                      , servant-elm-example-app
                      , servant-lucid
@@ -43,10 +47,11 @@ executable code-generator
   main-is:             Main.hs
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
-                     , servant-elm-example-app
+                     , elm-export
                      , servant-elm
-                     , servant-server
+                     , servant-elm-example-app
                      , servant-js
+                     , servant-server
                      , text
   default-language:    Haskell2010
 
