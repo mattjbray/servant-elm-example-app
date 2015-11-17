@@ -12,7 +12,6 @@ packages:
   subdirs:
   - servant
   - servant-foreign
-  - servant-js
   - servant-server
   - servant-lucid
   extra-dep: True
