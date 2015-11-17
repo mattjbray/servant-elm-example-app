@@ -10,11 +10,11 @@ module Api.Types
     , BookDB
     ) where
 
-import           Data.Aeson   (ToJSON)
+import           Data.Aeson   (FromJSON, ToJSON)
 import qualified Data.Map.Strict as Map
 import           Elm          (ToElmType)
 import           GHC.Generics
-import           Servant      ((:>), Get, JSON)
+import           Servant      ((:<|>), (:>), ReqBody, Post, Get, JSON)
 
 data Author = Author
   { name        :: String
@@ -23,12 +23,12 @@ data Author = Author
 
 instance ToElmType Author
 instance ToJSON Author
+instance FromJSON Author
 
-
-type BookId = Int
+type BookId = String
 
 data Book = Book
-  { bookId :: BookId
+  { bookId :: Maybe BookId
   , title  :: String
   , author :: Author
   } deriving (Show, Generic)
@@ -37,6 +37,9 @@ type BookDB = Map.Map BookId Book
 
 instance ToElmType Book
 instance ToJSON Book
+instance FromJSON Book
 
 
-type Api = "books" :> Get '[JSON] [Book]
+type Api = "books" :> ( Get '[JSON] [Book]
+                   :<|> ReqBody '[JSON] Book :> Post '[JSON] Book
+                      )

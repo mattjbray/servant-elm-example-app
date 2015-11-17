@@ -8,7 +8,7 @@ import Task
 
 
 type alias Book =
-  {bookId : Int
+  {bookId : Maybe String
   ,title : String
   ,author : Author}
 
@@ -18,7 +18,7 @@ type alias Author =
 
 decodeBook : Decoder Book
 decodeBook = Book
-  `map`   ("bookId" := int)
+  `map`   ("bookId" := maybe string)
   `apply` ("title" := string)
   `apply` ("author" := decodeAuthor)
 
@@ -37,4 +37,16 @@ getBooks =
         }
   in  Http.fromJson
         (list decodeBook)
+        (Http.send Http.defaultSettings request)
+
+postBooks : Book -> Task.Task Http.Error (Book)
+postBooks body =
+  let request =
+        { verb = "POST"
+        , headers = [("Content-Type", "application/json")]
+        , url = "http://localhost:8000/api/books"
+        , body = Http.empty
+        }
+  in  Http.fromJson
+        (decodeBook)
         (Http.send Http.defaultSettings request)

@@ -7,6 +7,7 @@ import StartApp
 import Task
 import Json.Decode as Json
 
+import Events
 import Generated.Api exposing (..)
 
 
@@ -31,16 +32,19 @@ port tasks =
 
 
 type alias Model =
-  { books : List Book }
+  { books : List Book
+  , newBookTitle : String }
 
 
 init : (Model, Effects Action)
-init = ({ books = [] }, Effects.none)
+init = ({ books = [], newBookTitle = "" }, Effects.none)
 
 
 type Action
   = FetchBooks
   | SetBooks (Maybe (List Book))
+  | SetNewBookTitle String
+  | CreateBook
 
 
 update : Action -> Model -> (Model, Effects Action)
@@ -50,8 +54,17 @@ update action model =
       fetchBooks model
 
     SetBooks mNewBooks ->
-      ( { model | books <- Maybe.withDefault model.books mNewBooks }
-      , Effects.none
+      pure { model | books <- Maybe.withDefault model.books mNewBooks }
+
+    SetNewBookTitle title ->
+      pure { model | newBookTitle <- title }
+
+    CreateBook ->
+      ( { model | newBookTitle <- "" }
+      , postBooks {bookId = Nothing, title = model.newBookTitle, author = {name = "", yearOfBirth = 0}}
+          |> Task.toMaybe
+          |> Task.map (\_ -> FetchBooks)
+          |> Effects.task
       )
 
 
@@ -66,6 +79,20 @@ fetchBooks model =
 
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
-  Html.div [] [ Html.text (toString model.books)
-              , Html.button [Html.Events.onClick address FetchBooks] [Html.text "refresh"]
-              ]
+  Html.div []
+    [ Html.div [] [Html.text (toString model.books)]
+    , Html.button [Html.Events.onClick address FetchBooks] [Html.text "refresh"]
+    , viewBookForm address model
+    ]
+
+
+viewBookForm : Signal.Address Action -> Model -> Html.Html
+viewBookForm address model =
+  Html.div []
+    [ Html.input
+        [ Events.onChange address SetNewBookTitle
+        , Events.onEnter address CreateBook] [] ]
+
+
+pure : a -> (a, Effects b)
+pure model = (model, Effects.none)
