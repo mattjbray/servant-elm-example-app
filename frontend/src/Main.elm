@@ -2,8 +2,10 @@ module Main where
 
 import Effects exposing (Effects)
 import Html
+import Html.Attributes
 import Html.Events
 import StartApp
+import String
 import Task
 import Json.Decode as Json
 
@@ -33,17 +35,26 @@ port tasks =
 
 type alias Model =
   { books : List Book
-  , newBookTitle : String }
+  , newBookTitle : String
+  , newBookAuthorName : String
+  , newBookAuthorYearOfBirth : Int }
 
 
 init : (Model, Effects Action)
-init = ({ books = [], newBookTitle = "" }, Effects.none)
+init = fetchBooks initModel
 
+initModel : Model
+initModel = { books = []
+            , newBookTitle = ""
+            , newBookAuthorName = ""
+            , newBookAuthorYearOfBirth = 0 }
 
 type Action
   = FetchBooks
   | SetBooks (Maybe (List Book))
   | SetNewBookTitle String
+  | SetNewBookAuthorName String
+  | SetNewBookAuthorYearOfBirth Int
   | CreateBook
 
 
@@ -59,13 +70,24 @@ update action model =
     SetNewBookTitle title ->
       pure { model | newBookTitle <- title }
 
+    SetNewBookAuthorName name ->
+      pure { model | newBookAuthorName <- name }
+
+    SetNewBookAuthorYearOfBirth year ->
+      pure { model | newBookAuthorYearOfBirth <- year }
+
     CreateBook ->
-      ( { model | newBookTitle <- "" }
-      , postBooks {bookId = Nothing, title = model.newBookTitle, author = {name = "", yearOfBirth = 0}}
-          |> Task.toMaybe
-          |> Task.map (\_ -> FetchBooks)
-          |> Effects.task
-      )
+      if validate model
+        then ( { model | newBookTitle <- "", newBookAuthorName <- "" }
+             , postBooks { bookId = Nothing
+                         , title = model.newBookTitle
+                         , author = { name = model.newBookAuthorName
+                                    , yearOfBirth = model.newBookAuthorYearOfBirth } }
+                 |> Task.toMaybe
+                 |> Task.map (\_ -> FetchBooks)
+                 |> Effects.task
+             )
+        else pure model
 
 
 fetchBooks : Model -> (Model, Effects Action)
@@ -77,12 +99,17 @@ fetchBooks model =
     |> Effects.map SetBooks )
 
 
+validate : Model -> Bool
+validate {newBookTitle, newBookAuthorName} =
+  List.all (not << String.isEmpty) [newBookTitle, newBookAuthorName]
+
+
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
   Html.div []
-    [ Html.div [] [Html.text (toString model.books)]
+    [ viewBookForm address model
     , Html.button [Html.Events.onClick address FetchBooks] [Html.text "refresh"]
-    , viewBookForm address model
+    , Html.div [] (List.map viewBook model.books)
     ]
 
 
@@ -90,8 +117,33 @@ viewBookForm : Signal.Address Action -> Model -> Html.Html
 viewBookForm address model =
   Html.div []
     [ Html.input
-        [ Events.onChange address SetNewBookTitle
-        , Events.onEnter address CreateBook] [] ]
+        [ Html.Attributes.placeholder "Title"
+        , Html.Attributes.value model.newBookTitle
+        , Events.onChange address SetNewBookTitle
+        , Events.onEnter address CreateBook] []
+    , Html.input
+        [ Html.Attributes.placeholder "Author"
+        , Html.Attributes.value model.newBookAuthorName
+        , Events.onChange address SetNewBookAuthorName
+        , Events.onEnter address CreateBook] []
+    , Html.input
+        [ Html.Attributes.placeholder "Date of birth"
+        , Html.Attributes.value (toString model.newBookAuthorYearOfBirth)
+        , Html.Attributes.type' "number"
+        , Events.onChange address (SetNewBookAuthorYearOfBirth << Maybe.withDefault 0 << Result.toMaybe << String.toInt)
+        , Events.onEnter address CreateBook] []
+    ]
+
+
+viewBook : Book -> Html.Html
+viewBook book =
+  Html.p []
+    [Html.text
+       (book.title
+        ++ " by "
+        ++ book.author.name
+        ++ " (b." ++ toString book.author.yearOfBirth ++ ")"
+        ++ " {" ++ Maybe.withDefault "unknown" book.bookId ++ "}")]
 
 
 pure : a -> (a, Effects b)
