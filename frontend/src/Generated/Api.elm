@@ -2,6 +2,7 @@ module Generated.Api where
 
 import Json.Decode exposing (..)
 import Json.Decode.Extra exposing (apply)
+import Json.Encode as JS
 import Http
 import String
 import Task
@@ -39,13 +40,30 @@ getBooks =
         (list decodeBook)
         (Http.send Http.defaultSettings request)
 
+encodeBook : Book -> JS.Value
+encodeBook x =
+  JS.object
+    [("bookId", 
+      (\y ->
+        case y of
+          Just val -> JS.string val
+          Nothing -> JS.null) x.bookId)
+    ,("title", JS.string x.title)
+    ,("author", encodeAuthor x.author)]
+
+encodeAuthor : Author -> JS.Value
+encodeAuthor x =
+  JS.object
+    [("name", JS.string x.name)
+    ,("yearOfBirth", JS.int x.yearOfBirth)]
+
 postBooks : Book -> Task.Task Http.Error (Book)
 postBooks body =
   let request =
         { verb = "POST"
         , headers = [("Content-Type", "application/json")]
         , url = "http://localhost:8000/api/books"
-        , body = Http.empty
+        , body = (Http.string (JS.encode 0 (encodeBook body)))
         }
   in  Http.fromJson
         (decodeBook)
