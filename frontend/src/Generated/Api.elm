@@ -7,7 +7,27 @@ import String
 import Task
 
 
-getBooks : Task.Task Http.Error List Book
+type alias Book =
+  {bookId : Int
+  ,title : String
+  ,author : Author}
+
+type alias Author =
+  {name : String
+  ,yearOfBirth : Int}
+
+decodeBook : Decoder Book
+decodeBook = Book
+  `map`   ("bookId" := int)
+  `apply` ("title" := string)
+  `apply` ("author" := decodeAuthor)
+
+decodeAuthor : Decoder Author
+decodeAuthor = Author
+  `map`   ("name" := string)
+  `apply` ("yearOfBirth" := int)
+
+getBooks : Task.Task Http.Error (List (Book))
 getBooks =
   let request =
         { verb = "GET"
@@ -16,5 +36,5 @@ getBooks =
         , body = Http.empty
         }
   in  Http.fromJson
-        list decodeBook
+        (list decodeBook)
         (Http.send Http.defaultSettings request)

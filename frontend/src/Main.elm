@@ -31,55 +31,41 @@ port tasks =
 
 
 type alias Model =
-  { counter : Counter }
+  { books : List Book }
 
 
 init : (Model, Effects Action)
-init = ({ counter = {count=0} }, Effects.none)
+init = ({ books = [] }, Effects.none)
 
 
 type Action
-  = IncCounter
-  | FetchCounter
-  | SetCounter (Maybe Counter)
+  = FetchBooks
+  | SetBooks (Maybe (List Book))
 
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
-    IncCounter ->
-      incCounter model
+    FetchBooks ->
+      fetchBooks model
 
-    FetchCounter ->
-      fetchCounter model
-
-    SetCounter mNewCounter ->
-      ( {model | counter <- Maybe.withDefault model.counter mNewCounter }
+    SetBooks mNewBooks ->
+      ( { model | books <- Maybe.withDefault model.books mNewBooks }
       , Effects.none
       )
 
 
-incCounter : Model -> (Model, Effects Action)
-incCounter model =
-  ( model -- { model | counter <- model.counter + 1 }
-  , postCounterInc
-    |> Task.toMaybe
-    |> Effects.task
-    |> Effects.map SetCounter )
-
-
-fetchCounter : Model -> (Model, Effects Action)
-fetchCounter model =
+fetchBooks : Model -> (Model, Effects Action)
+fetchBooks model =
   ( model
-  , getCounter
+  , getBooks
     |> Task.toMaybe
     |> Effects.task
-    |> Effects.map SetCounter )
+    |> Effects.map SetBooks )
 
 
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
-  Html.div [] [ Html.text (toString model.counter)
-              , Html.button [Html.Events.onClick address FetchCounter] [Html.text "refresh"]
-              , Html.button [Html.Events.onClick address IncCounter] [Html.text "inc"]
+  Html.div [] [ Html.text (toString model.books)
+              , Html.button [Html.Events.onClick address FetchBooks] [Html.text "refresh"]
               ]
