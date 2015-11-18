@@ -1,8 +1,8 @@
 module Main where
 
 import Effects exposing (Effects)
-import Html exposing (div, button, text, input, p)
-import Html.Attributes exposing (placeholder, value, type')
+import Html exposing (div, button, text, input, p, h1)
+import Html.Attributes exposing (placeholder, value, type', class)
 import Html.Events exposing (onClick)
 import StartApp
 import String
@@ -106,44 +106,53 @@ validate {newBookTitle, newBookAuthorName} =
 
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
-  div []
-    [ viewBookForm address model
+  div [class "container-fluid"]
+    [ h1 [] [text "Books"]
+    , viewBookForm address model
     , button [onClick address FetchBooks] [text "refresh"]
-    , div [] (List.map viewBook model.books)
+    , div [class "row"] (List.map viewBook model.books)
     ]
 
 
 viewBookForm : Signal.Address Action -> Model -> Html.Html
 viewBookForm address model =
-  div []
-    [ input
-        [ placeholder "Title"
-        , value model.newBookTitle
-        , onChange address SetNewBookTitle
-        , onEnter address CreateBook] []
-    , input
-        [ placeholder "Author"
-        , value model.newBookAuthorName
-        , onChange address SetNewBookAuthorName
-        , onEnter address CreateBook] []
-    , input
-        [ placeholder "Date of birth"
-        , value (toString model.newBookAuthorYearOfBirth)
-        , type' "number"
-        , onChange address (SetNewBookAuthorYearOfBirth << Maybe.withDefault 0 << Result.toMaybe << String.toInt)
-        , onEnter address CreateBook] []
+  div [class "row"]
+    [ div [class "col-lg-12"]
+        [ input
+            [ placeholder "Title"
+            , value model.newBookTitle
+            , onChange address SetNewBookTitle
+            , onEnter address CreateBook] []
+        , input
+            [ placeholder "Author"
+            , value model.newBookAuthorName
+            , onChange address SetNewBookAuthorName
+            , onEnter address CreateBook] []
+        , input
+            [ placeholder "Date of birth"
+            , value (toString model.newBookAuthorYearOfBirth)
+            , type' "number"
+            , onChange address (SetNewBookAuthorYearOfBirth << Maybe.withDefault 0 << Result.toMaybe << String.toInt)
+            , onEnter address CreateBook] []
+        ]
     ]
 
 
 viewBook : Book -> Html.Html
 viewBook book =
-  p []
-    [text
-       (book.title
-        ++ " by "
-        ++ book.author.name
-        ++ " (b." ++ toString book.author.yearOfBirth ++ ")"
-        ++ " {" ++ Maybe.withDefault "unknown" book.bookId ++ "}")]
+  div [class "col-lg-3"]
+    [ div [class "panel panel-default"]
+        [ div [class "panel-heading"]
+            [text book.title]
+        , div [class "panel-body"]
+            [ p []
+                [text
+                   (book.author.name
+                    ++ " (b." ++ toString book.author.yearOfBirth ++ ")"
+                    ++ " {" ++ Maybe.withDefault "unknown" book.bookId ++ "}")]
+            ]
+        ]
+    ]
 
 
 pure : a -> (a, Effects b)
