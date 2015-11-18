@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set +x
+
+while true; do
+  make
+  make_result=$?
+  server_pid=0
+  if [ $make_result -eq 0 ]; then
+    make serve &
+    server_pid=$!
+  fi
+  inotifywait -qre close_write .
+  if [ $server_pid -gt 0 ]; then
+    kill $server_pid
+  fi
+done
