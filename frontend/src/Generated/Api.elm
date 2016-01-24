@@ -33,7 +33,8 @@ getBooks =
   let request =
         { verb = "GET"
         , headers = [("Content-Type", "application/json")]
-        , url = "http://localhost:8000/api/books"
+        , url = "http://localhost:8000/api"
+             ++ "/" ++ "books"
         , body = Http.empty
         }
   in  Http.fromJson
@@ -62,9 +63,10 @@ postBooks body =
   let request =
         { verb = "POST"
         , headers = [("Content-Type", "application/json")]
-        , url = "http://localhost:8000/api/books"
-        , body = (Http.string (JS.encode 0 (encodeBook body)))
+        , url = "http://localhost:8000/api"
+             ++ "/" ++ "books"
+        , body = Http.string (JS.encode 0 (encodeBook body))
         }
   in  Http.fromJson
-        (decodeBook)
+        decodeBook
         (Http.send Http.defaultSettings request)
