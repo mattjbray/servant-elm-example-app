@@ -17,7 +17,12 @@ packages:
   extra-dep: True
 - location:
     git: https://github.com/mattjbray/servant-elm.git
-    commit: fa72d1c45befc0769993defd785869632b549a84
+    commit: e8d69ada77d6fad11ac51481c6749dc539b4a7da
+  extra-dep: True
+- location:
+    git: https://www.github.com/mattjbray/elm-export
+    commit: 41ff85e53cb4072df234128873a5e086a62e7789
+  extra-dep: True
 
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps:
