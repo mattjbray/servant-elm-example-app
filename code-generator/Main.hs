@@ -23,4 +23,4 @@ specs =
   ]
 
 main :: IO ()
-main = specsToDir "frontend/src" specs
+main = specsToDir specs "frontend/src"
