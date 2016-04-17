@@ -6,7 +6,6 @@
 module Main where
 
 import           Control.Concurrent.STM   (TVar, newTVarIO)
-import           Control.Monad            (liftM)
 import qualified Data.Map.Strict          as Map
 import           Data.UUID                (toString)
 import           Lucid                    (Html, body_, content_, doctypehtml_,
@@ -55,8 +54,8 @@ app bookDb = serve siteApi (server bookDb)
 main :: IO ()
 main = do
   let port = 8000
-  uuid1 <- liftM toString randomIO
-  uuid2 <- liftM toString randomIO
+  uuid1 <- toString <$> randomIO
+  uuid2 <- toString <$> randomIO
   let books = [ Api.Types.Book (Just uuid1) "Real World Haskell" (Api.Types.Author "Bryan O'Sullivan, Don Stewart, and John Goerzen" 1970)
               , Api.Types.Book (Just uuid2) "Learn You a Haskell for Great Good" (Api.Types.Author "Miran Lipovača" 1970)
               ]
