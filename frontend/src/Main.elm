@@ -65,20 +65,20 @@ update action model =
       fetchBooks model
 
     SetBooks mNewBooks ->
-      pure { model | books <- Maybe.withDefault model.books mNewBooks }
+      pure { model | books = Maybe.withDefault model.books mNewBooks }
 
     SetNewBookTitle title ->
-      pure { model | newBookTitle <- title }
+      pure { model | newBookTitle = title }
 
     SetNewBookAuthorName name ->
-      pure { model | newBookAuthorName <- name }
+      pure { model | newBookAuthorName = name }
 
     SetNewBookAuthorYearOfBirth year ->
-      pure { model | newBookAuthorYearOfBirth <- year }
+      pure { model | newBookAuthorYearOfBirth = year }
 
     CreateBook ->
       if validate model
-        then ( { model | newBookTitle <- "", newBookAuthorName <- "" }
+        then ( { model | newBookTitle = "", newBookAuthorName = "" }
              , postBooks { bookId = Nothing
                          , title = model.newBookTitle
                          , author = { name = model.newBookAuthorName
