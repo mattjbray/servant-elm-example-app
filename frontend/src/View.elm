@@ -29,11 +29,19 @@ view address model =
           }
     ]
 
+cellStyle : List Style.Style
+cellStyle =
+  [ offset Desktop 2
+  , size Desktop 8
+  , offset Tablet 1
+  , size Tablet 10
+  ]
+
 viewMain address model =
   [ grid [ noSpacing ]
-      [ cell [ offset All 2, size All 8 ]
+      [ cell cellStyle
           [ NewBookForm.View.view (Signal.forwardTo address NewBookFormAction) model.newBookForm ]
-      , cell [ offset All 2, size All 8 ]
+      , cell cellStyle
           [ BooksList.View.view (Signal.forwardTo address BooksListAction) model.booksList ]
       ]
   ]
