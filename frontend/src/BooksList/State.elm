@@ -30,12 +30,14 @@ update action model =
 
     RefreshButtonAction action' ->
       let
-        (newButton, buttonFx) =
+        ( newButton, buttonFx ) =
           Button.update action' model.refreshButton
-        (newModel, fx) =
+
+        ( newModel, fx ) =
           case action' of
             Button.Click ->
               fetchBooks model
+
             _ ->
               pure model
       in

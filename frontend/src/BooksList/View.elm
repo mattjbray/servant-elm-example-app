@@ -14,13 +14,17 @@ import BooksList.Types exposing (..)
 view address model =
   grid
     []
-    [ cell [ size All 12 ]
+    [ cell
+        [ size All 12 ]
         [ h2 [] [ text "All books" ] ]
-    , cell [ size All 12 ]
-        [ grid [ nestedGrid ]
+    , cell
+        [ size All 12 ]
+        [ grid
+            [ nestedGrid ]
             (List.map viewBook model.books)
         ]
-    , cell [ size All 12 ]
+    , cell
+        [ size All 12 ]
         [ Button.raised
             (Signal.forwardTo address RefreshButtonAction)
             model.refreshButton
@@ -32,8 +36,9 @@ view address model =
 
 viewBook : Book -> Grid.Cell
 viewBook book =
-  cell [ size All 4 ]
-    [ h4 [] [text book.title]
+  cell
+    [ size All 4 ]
+    [ h4 [] [ text book.title ]
     , p
         []
         [ text

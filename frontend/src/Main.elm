@@ -10,6 +10,7 @@ import Types
 import State
 import View
 
+
 app : StartApp.App Types.Model
 app =
   StartApp.start
@@ -17,7 +18,7 @@ app =
     , view = View.view
     , update = State.update
     , inputs =
-      [ Layout.setupSignals Types.MDLLayout ]
+        [ Layout.setupSignals Types.MDLLayout ]
     }
 
 

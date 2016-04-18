@@ -13,10 +13,13 @@ import NewBookForm.Types exposing (..)
 
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
-  grid []
-    [ cell [ size All 12 ]
+  grid
+    []
+    [ cell
+        [ size All 12 ]
         [ h2 [] [ text "Create a book" ] ]
-    , cell [ size All 12 ]
+    , cell
+        [ size All 12 ]
         [ form
             [ onSubmitPreventDefault address CreateBook ]
             [ viewFormFields address model ]
@@ -25,15 +28,23 @@ view address model =
 
 
 viewFormFields address model =
-  grid [ nestedGrid ]
-    [ cell [size All 3]
+  grid
+    [ nestedGrid ]
+    [ cell
+        [ size All 3 ]
         [ Textfield.view (Signal.forwardTo address TitleFieldAction) model.titleField [] ]
-    , cell [size All 3]
+    , cell
+        [ size All 3 ]
         [ Textfield.view (Signal.forwardTo address AuthorNameFieldAction) model.authorNameField [] ]
-    , cell [size All 3]
+    , cell
+        [ size All 3 ]
         [ Textfield.view (Signal.forwardTo address AuthorYearOfBirthFieldAction) model.authorYearOfBirthField [] ]
-    , cell [size All 3]
-        [ Button.raised (Signal.forwardTo address SubmitButtonAction) model.submitButton []
+    , cell
+        [ size All 3 ]
+        [ Button.raised
+            (Signal.forwardTo address SubmitButtonAction)
+            model.submitButton
+            []
             [ text "Create book" ]
         ]
     ]

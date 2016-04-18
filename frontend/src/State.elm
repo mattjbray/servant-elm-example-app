@@ -16,7 +16,7 @@ import Types exposing (..)
 init : ( Model, Effects Action )
 init =
   let
-    (booksList, blFx) =
+    ( booksList, blFx ) =
       BooksList.State.init
   in
     ( { booksList = booksList
@@ -30,12 +30,9 @@ init =
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
-    -- NewBookFormAction (NewBookForm.Types.FetchBooks) ->
-    --   fetchBooks model
-
     BooksListAction action' ->
       let
-        (newBooksList, blFx) =
+        ( newBooksList, blFx ) =
           BooksList.State.update action' model.booksList
       in
         ( { model | booksList = newBooksList }
@@ -44,13 +41,15 @@ update action model =
 
     NewBookFormAction action' ->
       let
-        (newBookForm', bfFx) =
+        ( newBookForm', bfFx ) =
           NewBookForm.State.update action' model.newBookForm
+
         -- Thread the FetchBooks action through to the books list.
-        (newBooksList, blFx) =
+        ( newBooksList, blFx ) =
           case action' of
             NewBookForm.Types.FetchBooks ->
               BooksList.State.update BooksList.Types.FetchBooks model.booksList
+
             _ ->
               pure model.booksList
       in
@@ -65,8 +64,8 @@ update action model =
         )
 
     MDLLayout action' ->
-        let
-          (mdlLayout', fx) =
-            Layout.update action' model.mdlLayout
-        in
-          ( { model | mdlLayout = mdlLayout' }, Effects.map MDLLayout fx )
+      let
+        ( mdlLayout', fx ) =
+          Layout.update action' model.mdlLayout
+      in
+        ( { model | mdlLayout = mdlLayout' }, Effects.map MDLLayout fx )

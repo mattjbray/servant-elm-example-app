@@ -15,19 +15,23 @@ import Types exposing (..)
 
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
-  Html.div []
+  Html.div
+    []
     [ nestedGridStylesheet
-    , Layout.view (Signal.forwardTo address MDLLayout) model.mdlLayout
-          { header =
-              [ Layout.row
-                  [ Layout.title "Books"
-                  ]
-              ]
-          , drawer = []
-          , tabs = []
-          , main = viewMain address model
-          }
+    , Layout.view
+        (Signal.forwardTo address MDLLayout)
+        model.mdlLayout
+        { header =
+            [ Layout.row
+                [ Layout.title "Books"
+                ]
+            ]
+        , drawer = []
+        , tabs = []
+        , main = viewMain address model
+        }
     ]
+
 
 cellStyle : List Style.Style
 cellStyle =
@@ -37,11 +41,15 @@ cellStyle =
   , size Tablet 10
   ]
 
+
 viewMain address model =
-  [ grid [ noSpacing ]
-      [ cell cellStyle
+  [ grid
+      [ noSpacing ]
+      [ cell
+          cellStyle
           [ NewBookForm.View.view (Signal.forwardTo address NewBookFormAction) model.newBookForm ]
-      , cell cellStyle
+      , cell
+          cellStyle
           [ BooksList.View.view (Signal.forwardTo address BooksListAction) model.booksList ]
       ]
   ]

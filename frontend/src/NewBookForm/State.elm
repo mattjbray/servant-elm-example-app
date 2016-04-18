@@ -14,7 +14,8 @@ import NewBookForm.Types exposing (..)
 init : Model
 init =
   let
-    tfModel = Textfield.model
+    tfModel =
+      Textfield.model
   in
     { title = Nothing
     , titleField =
@@ -30,7 +31,7 @@ init =
     }
 
 
-update : Action -> Model -> (Model, Effects Action)
+update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     CreateBook ->
@@ -40,7 +41,8 @@ update action model =
       let
         newField =
           Textfield.update action' model.titleField
-        (title, error) =
+
+        ( title, error ) =
           if String.isEmpty newField.value then
             ( Nothing
             , Just "Title should not be empty"
@@ -50,16 +52,18 @@ update action model =
             , Nothing
             )
       in
-        pure { model
-               | titleField = { newField | error = error }
-               , title = title
-             }
+        pure
+          { model
+            | titleField = { newField | error = error }
+            , title = title
+          }
 
     AuthorNameFieldAction action' ->
       let
         newField =
           Textfield.update action' model.authorNameField
-        ( authorName, error) =
+
+        ( authorName, error ) =
           if String.isEmpty newField.value then
             ( Nothing
             , Just "Author name should not be empty"
@@ -69,30 +73,34 @@ update action model =
             , Nothing
             )
       in
-        pure { model
-               | authorNameField = { newField | error = error }
-               , authorName = authorName
-             }
+        pure
+          { model
+            | authorNameField = { newField | error = error }
+            , authorName = authorName
+          }
 
     AuthorYearOfBirthFieldAction action' ->
       let
         newField =
           Textfield.update action' model.authorYearOfBirthField
-        (year, error) =
+
+        ( year, error ) =
           case String.toInt newField.value of
             Err msg ->
               ( Nothing
               , Just msg
               )
+
             Ok val ->
               ( Just val
               , Nothing
               )
       in
-        pure { model
-               | authorYearOfBirthField = { newField | error = error }
-               , authorYearOfBirth = year
-             }
+        pure
+          { model
+            | authorYearOfBirthField = { newField | error = error }
+            , authorYearOfBirth = year
+          }
 
     FetchBooks ->
       -- Should be handled by the parent
@@ -101,7 +109,7 @@ update action model =
     -- TODO match only click action
     SubmitButtonAction action' ->
       let
-        (newButton, buttonFx) =
+        ( newButton, buttonFx ) =
           Button.update action' model.submitButton
       in
         ( model
@@ -109,10 +117,10 @@ update action model =
         )
 
 
-createBook : Model -> (Model, Effects Action)
+createBook : Model -> ( Model, Effects Action )
 createBook model =
   case validate model of
-    Just (title, authorName, authorYearOfBirth) ->
+    Just ( title, authorName, authorYearOfBirth ) ->
       ( init
       , postBooks
           { bookId = Nothing
@@ -126,13 +134,15 @@ createBook model =
           |> Task.map (\_ -> FetchBooks)
           |> Effects.task
       )
+
     Nothing ->
       pure model
 
 
-validate : Model -> Maybe (String, String, Int)
+validate : Model -> Maybe ( String, String, Int )
 validate model =
-  Maybe.map3 (,,)
+  Maybe.map3
+    (,,)
     model.title
     model.authorName
     model.authorYearOfBirth
