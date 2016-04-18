@@ -43,7 +43,13 @@ homePage =
       meta_ [ name_ "viewport"
             , content_ "width=device-width, initial-scale=1" ]
       link_ [ rel_ "stylesheet"
-             , href_ "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+             , href_ "https://fonts.googleapis.com/css?family=Roboto:400,300,500|Roboto+Mono|Roboto+Condensed:400,700&subset=latin,latin-ext"
+             ]
+      link_ [ rel_ "stylesheet"
+             , href_ "https://fonts.googleapis.com/icon?family=Material+Icons"
+             ]
+      link_ [ rel_ "stylesheet"
+             , href_ "https://code.getmdl.io/1.1.3/material.min.css"
              ]
       script_ [src_ "assets/app.js"] ""
     body_ (script_ "var elmApp = Elm.fullscreen(Elm.Main)")
