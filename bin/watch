@@ -9,8 +9,12 @@ while true; do
   if [ $make_result -eq 0 ]; then
     make serve &
     server_pid=$!
+    echo "Server started as PID $server_pid"
   fi
-  inotifywait -qre close_write .
+
+  echo "Watching directory for changes..."
+  fswatch -1 .
+
   if [ $server_pid -gt 0 ]; then
     kill $server_pid
   fi
