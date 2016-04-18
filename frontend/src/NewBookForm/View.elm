@@ -6,6 +6,7 @@ import Material.Grid as Grid exposing (grid, cell, size, Device(..))
 import Material.Textfield as Textfield
 
 import Lib.Events exposing (onSubmitPreventDefault)
+import Lib.Style exposing (nestedGrid)
 
 import NewBookForm.Types exposing (..)
 
@@ -24,7 +25,7 @@ view address model =
 
 
 viewFormFields address model =
-  grid []
+  grid [ nestedGrid ]
     [ cell [size All 3]
         [ Textfield.view (Signal.forwardTo address TitleFieldAction) model.titleField [] ]
     , cell [size All 3]
