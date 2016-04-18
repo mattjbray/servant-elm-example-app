@@ -1,4 +1,4 @@
-module Events (onChange, onEnter, onSubmitPreventDefault) where
+module Lib.Events (onChange, onEnter, onSubmitPreventDefault) where
 
 {-| Extensions to the Html.Events library.
 

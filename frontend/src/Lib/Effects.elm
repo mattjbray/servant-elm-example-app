@@ -1,4 +1,4 @@
-module Lib (pure) where
+module Lib.Effects (pure) where
 
 import Effects exposing (Effects)
 
