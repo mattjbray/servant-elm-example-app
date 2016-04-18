@@ -3,6 +3,8 @@ module State (..) where
 import Effects exposing (Effects)
 import Material.Layout as Layout
 
+import Lib.Effects exposing (pure)
+
 import BooksList.State
 import BooksList.Types
 import NewBookForm.State
@@ -42,11 +44,24 @@ update action model =
 
     NewBookFormAction action' ->
       let
-        (newBookForm', fx) =
+        (newBookForm', bfFx) =
           NewBookForm.State.update action' model.newBookForm
+        -- Thread the FetchBooks action through to the books list.
+        (newBooksList, blFx) =
+          case action' of
+            NewBookForm.Types.FetchBooks ->
+              BooksList.State.update BooksList.Types.FetchBooks model.booksList
+            _ ->
+              pure model.booksList
       in
-        ( { model | newBookForm = newBookForm' }
-        , Effects.map NewBookFormAction fx
+        ( { model
+            | newBookForm = newBookForm'
+            , booksList = newBooksList
+          }
+        , Effects.batch
+            [ Effects.map NewBookFormAction bfFx
+            , Effects.map BooksListAction blFx
+            ]
         )
 
     MDLLayout action' ->

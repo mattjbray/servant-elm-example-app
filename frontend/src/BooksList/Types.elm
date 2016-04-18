@@ -13,3 +13,4 @@ type alias Model =
 type Action
   = SetBooks (Maybe (List Book))
   | RefreshButtonAction Button.Action
+  | FetchBooks

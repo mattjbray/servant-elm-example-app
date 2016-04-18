@@ -46,6 +46,9 @@ update action model =
             ]
         )
 
+    FetchBooks ->
+      fetchBooks model
+
 
 fetchBooks : Model -> ( Model, Effects Action )
 fetchBooks model =
