@@ -1,21 +1,18 @@
 module Types (..) where
 
-import Material.Button as Button
 import Material.Layout as Layout
 
-import Generated.Api exposing (Book)
+import BooksList.Types
 import NewBookForm.Types
 
 type alias Model =
-  { books : List Book
+  { booksList : BooksList.Types.Model
   , newBookForm : NewBookForm.Types.Model
   , mdlLayout : Layout.Model
-  , refreshButton : Button.Model
   }
 
 
 type Action
-  = SetBooks (Maybe (List Book))
+  = BooksListAction BooksList.Types.Action
   | NewBookFormAction NewBookForm.Types.Action
   | MDLLayout Layout.Action
-  | RefreshButtonAction Button.Action
