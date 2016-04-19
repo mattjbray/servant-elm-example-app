@@ -2,6 +2,7 @@ module NewBookForm.Types (..) where
 
 import Material.Button as Button
 import Material.Textfield as Textfield
+import Material.Snackbar as Snackbar
 
 
 type alias Model =
@@ -12,6 +13,7 @@ type alias Model =
   , authorYearOfBirth : Maybe Int
   , authorYearOfBirthField : Textfield.Model
   , submitButton : Button.Model
+  , snackbar : Snackbar.Model ()
   }
 
 
@@ -22,3 +24,4 @@ type Action
   | AuthorNameFieldAction Textfield.Action
   | AuthorYearOfBirthFieldAction Textfield.Action
   | SubmitButtonAction Button.Action
+  | SnackbarAction (Snackbar.Action ())

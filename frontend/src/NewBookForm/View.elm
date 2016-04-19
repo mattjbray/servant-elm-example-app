@@ -4,6 +4,7 @@ import Html exposing (form, text, h2)
 import Material.Button as Button
 import Material.Grid as Grid exposing (grid, cell, size, Device(..))
 import Material.Textfield as Textfield
+import Material.Snackbar as Snackbar
 
 import Lib.Events exposing (onSubmitPreventDefault)
 import Lib.Style exposing (nestedGrid)
@@ -13,17 +14,21 @@ import NewBookForm.Types exposing (..)
 
 view : Signal.Address Action -> Model -> Html.Html
 view address model =
-  grid
+  Html.div
     []
-    [ cell
-        [ size All 12 ]
-        [ h2 [] [ text "Create a book" ] ]
-    , cell
-        [ size All 12 ]
-        [ form
-            [ onSubmitPreventDefault address CreateBook ]
-            [ viewFormFields address model ]
-        ]
+    [ grid
+       []
+       [ cell
+           [ size All 12 ]
+           [ h2 [] [ text "Create a book" ] ]
+       , cell
+           [ size All 12 ]
+           [ form
+               [ onSubmitPreventDefault address CreateBook ]
+               [ viewFormFields address model ]
+           ]
+       ]
+    , Snackbar.view (Signal.forwardTo address SnackbarAction) model.snackbar
     ]
 
 

@@ -2,12 +2,13 @@ module NewBookForm.State (..) where
 
 import Effects exposing (Effects)
 import Material.Button as Button
+import Material.Snackbar as Snackbar
 import Material.Textfield as Textfield
 import String
 import Task
 
 import Generated.Api exposing (postBooks)
-import Lib.Effects exposing (pure)
+import Lib.Effects exposing (pure, andThen)
 import NewBookForm.Types exposing (..)
 
 
@@ -28,6 +29,8 @@ init =
         { tfModel | label = Just { text = "Author's YOB", float = True } }
     , submitButton =
         Button.model True
+    , snackbar =
+        Snackbar.model
     }
 
 
@@ -35,7 +38,7 @@ update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     CreateBook ->
-      createBook model
+      checkCreateBook model
 
     TitleFieldAction action' ->
       let
@@ -106,37 +109,66 @@ update action model =
       -- Should be handled by the parent
       pure model
 
-    -- TODO match only click action
     SubmitButtonAction action' ->
       let
         ( newButton, buttonFx ) =
           Button.update action' model.submitButton
       in
-        ( model
+        ( { model | submitButton = newButton }
         , Effects.map SubmitButtonAction buttonFx
         )
 
+    SnackbarAction action' ->
+      let
+        ( newSnackbar, sbFx ) =
+          Snackbar.update action' model.snackbar
+      in
+        ( { model | snackbar = newSnackbar }
+        , Effects.map SnackbarAction sbFx
+        )
 
-createBook : Model -> ( Model, Effects Action )
-createBook model =
+
+checkCreateBook : Model -> ( Model, Effects Action )
+checkCreateBook model =
   case validate model of
     Just ( title, authorName, authorYearOfBirth ) ->
-      ( init
-      , postBooks
-          { bookId = Nothing
-          , title = title
-          , author =
-              { name = authorName
-              , yearOfBirth = authorYearOfBirth
-              }
-          }
-          |> Task.toMaybe
-          |> Task.map (\_ -> FetchBooks)
-          |> Effects.task
-      )
+      createBook title authorName authorYearOfBirth
+        `andThen` popupMessage "Book created!"
 
     Nothing ->
-      pure model
+      popupMessage
+        "Book was not created because of validation errors."
+        model
+
+
+createBook : String -> String -> Int -> (Model, Effects Action)
+createBook title authorName authorYearOfBirth =
+  ( init
+  , postBooks
+      { bookId = Nothing
+      , title = title
+      , author =
+          { name = authorName
+          , yearOfBirth = authorYearOfBirth
+          }
+      }
+      |> Task.toMaybe
+      |> Task.map (\_ -> FetchBooks)
+      |> Effects.task
+  )
+
+
+popupMessage : String -> Model -> ( Model, Effects Action )
+popupMessage msg model =
+  let
+    ( newSnackbar, sbFx ) =
+      Snackbar.add
+        (Snackbar.toast () msg)
+        model.snackbar
+  in
+    ( { model | snackbar = newSnackbar }
+    , Effects.map SnackbarAction sbFx
+    )
 
 
 validate : Model -> Maybe ( String, String, Int )
