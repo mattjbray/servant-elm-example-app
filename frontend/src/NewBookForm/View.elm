@@ -17,17 +17,17 @@ view address model =
   Html.div
     []
     [ grid
-       []
-       [ cell
-           [ size All 12 ]
-           [ h2 [] [ text "Create a book" ] ]
-       , cell
-           [ size All 12 ]
-           [ form
-               [ onSubmitPreventDefault address CreateBook ]
-               [ viewFormFields address model ]
-           ]
-       ]
+        []
+        [ cell
+            [ size All 12 ]
+            [ h2 [] [ text "Create a book" ] ]
+        , cell
+            [ size All 12 ]
+            [ form
+                [ onSubmitPreventDefault address CreateBook ]
+                [ viewFormFields address model ]
+            ]
+        ]
     , Snackbar.view (Signal.forwardTo address SnackbarAction) model.snackbar
     ]
 

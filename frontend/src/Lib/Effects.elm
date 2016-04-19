@@ -8,8 +8,8 @@ pure model =
   ( model, Effects.none )
 
 
-andThen : ( a, Effects e ) -> ( a -> ( b, Effects e ) ) -> ( b, Effects e)
-andThen (model, effects) f =
+andThen : ( a, Effects e ) -> (a -> ( b, Effects e )) -> ( b, Effects e )
+andThen ( model, effects ) f =
   let
     ( newModel, fx ) =
       f model

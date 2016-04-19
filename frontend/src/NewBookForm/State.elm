@@ -141,7 +141,7 @@ checkCreateBook model =
         model
 
 
-createBook : String -> String -> Int -> (Model, Effects Action)
+createBook : String -> String -> Int -> ( Model, Effects Action )
 createBook title authorName authorYearOfBirth =
   ( init
   , postBooks
