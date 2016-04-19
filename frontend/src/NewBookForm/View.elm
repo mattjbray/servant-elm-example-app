@@ -46,6 +46,9 @@ viewFormFields address model =
         [ Textfield.view (Signal.forwardTo address AuthorYearOfBirthFieldAction) model.authorYearOfBirthField [] ]
     , cell
         [ size All 3 ]
+        [ Textfield.view (Signal.forwardTo address RatingFieldAction) model.ratingField [] ]
+    , cell
+        [ size All 3 ]
         [ Button.raised
             (Signal.forwardTo address SubmitButtonAction)
             model.submitButton

@@ -45,8 +45,9 @@ viewBook book =
             (book.author.name
               ++ " (b."
               ++ toString book.author.yearOfBirth
-              ++ ")"
-              ++ " {"
+              ++ ") ("
+              ++ toString book.rating
+              ++ " stars) {"
               ++ Maybe.withDefault "unknown" book.bookId
               ++ "}"
             )

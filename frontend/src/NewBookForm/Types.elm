@@ -12,6 +12,8 @@ type alias Model =
   , authorNameField : Textfield.Model
   , authorYearOfBirth : Maybe Int
   , authorYearOfBirthField : Textfield.Model
+  , rating : Maybe Int
+  , ratingField : Textfield.Model
   , submitButton : Button.Model
   , snackbar : Snackbar.Model ()
   }
@@ -23,5 +25,6 @@ type Action
   | TitleFieldAction Textfield.Action
   | AuthorNameFieldAction Textfield.Action
   | AuthorYearOfBirthFieldAction Textfield.Action
+  | RatingFieldAction Textfield.Action
   | SubmitButtonAction Button.Action
   | SnackbarAction (Snackbar.Action ())

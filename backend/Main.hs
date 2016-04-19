@@ -62,8 +62,20 @@ main = do
   let port = 8000
   uuid1 <- toString <$> randomIO
   uuid2 <- toString <$> randomIO
-  let books = [ Api.Types.Book (Just uuid1) "Real World Haskell" (Api.Types.Author "Bryan O'Sullivan, Don Stewart, and John Goerzen" 1970)
-              , Api.Types.Book (Just uuid2) "Learn You a Haskell for Great Good" (Api.Types.Author "Miran Lipovača" 1970)
+  let books = [ Api.Types.Book
+                  (Just uuid1)
+                  "Real World Haskell"
+                  (Api.Types.Author
+                     "Bryan O'Sullivan, Don Stewart, and John Goerzen"
+                     1970)
+                  5
+              , Api.Types.Book
+                  (Just uuid2)
+                  "Learn You a Haskell for Great Good"
+                  (Api.Types.Author
+                     "Miran Lipovača"
+                     1970)
+                  5
               ]
   bookDb <- newTVarIO (Map.fromList (zip [uuid1, uuid2] books))
   putStrLn $ "Serving on port " ++ show port ++ "..."

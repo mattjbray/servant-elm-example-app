@@ -28,6 +28,7 @@ data Book = Book
   { bookId :: Maybe BookId
   , title  :: String
   , author :: Author
+  , rating :: Int
   } deriving (Show, Generic, ElmType, ToJSON, FromJSON)
 
 type BookDB = Map.Map BookId Book

@@ -7,7 +7,7 @@ import Material.Textfield as Textfield
 import String
 import Task
 
-import Generated.Api exposing (postBooks)
+import Generated.Api exposing (postBooks, Book)
 import Lib.Effects exposing (pure, andThen)
 import NewBookForm.Types exposing (..)
 
@@ -27,6 +27,9 @@ init =
     , authorYearOfBirth = Nothing
     , authorYearOfBirthField =
         { tfModel | label = Just { text = "Author's YOB", float = True } }
+    , rating = Nothing
+    , ratingField =
+        { tfModel | label = Just { text = "Rating", float = True } }
     , submitButton =
         Button.model True
     , snackbar =
@@ -105,6 +108,29 @@ update action model =
             , authorYearOfBirth = year
           }
 
+    RatingFieldAction action' ->
+      let
+        newField =
+          Textfield.update action' model.ratingField
+
+        ( rating, error ) =
+          case String.toInt newField.value of
+            Err msg ->
+              ( Nothing
+              , Just msg
+              )
+
+            Ok val ->
+              ( Just val
+              , Nothing
+              )
+      in
+        pure
+          { model
+            | ratingField = { newField | error = error }
+            , rating = rating
+          }
+
     FetchBooks ->
       -- Should be handled by the parent
       pure model
@@ -131,8 +157,8 @@ update action model =
 checkCreateBook : Model -> ( Model, Effects Action )
 checkCreateBook model =
   case validate model of
-    Just ( title, authorName, authorYearOfBirth ) ->
-      createBook title authorName authorYearOfBirth
+    Just book ->
+      createBook book
         `andThen` popupMessage "Book created!"
 
     Nothing ->
@@ -141,17 +167,10 @@ checkCreateBook model =
         model
 
 
-createBook : String -> String -> Int -> ( Model, Effects Action )
-createBook title authorName authorYearOfBirth =
+createBook : Book -> ( Model, Effects Action )
+createBook book =
   ( init
-  , postBooks
-      { bookId = Nothing
-      , title = title
-      , author =
-          { name = authorName
-          , yearOfBirth = authorYearOfBirth
-          }
-      }
+  , postBooks book
       |> Task.toMaybe
       |> Task.map (\_ -> FetchBooks)
       |> Effects.task
@@ -171,10 +190,20 @@ popupMessage msg model =
     )
 
 
-validate : Model -> Maybe ( String, String, Int )
+validate : Model -> Maybe Book
 validate model =
-  Maybe.map3
-    (,,)
+  Maybe.map4
+    (\title authorName authorYearOfBirth rating ->
+      { bookId = Nothing
+      , title = title
+      , author =
+          { name = authorName
+          , yearOfBirth = authorYearOfBirth
+          }
+      , rating = rating
+      }
+    )
     model.title
     model.authorName
     model.authorYearOfBirth
+    model.rating

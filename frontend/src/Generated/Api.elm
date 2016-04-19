@@ -12,6 +12,7 @@ type alias Book =
   { bookId : Maybe String
   , title : String
   , author : Author
+  , rating : Int
   }
 
 type alias Author =
@@ -25,6 +26,7 @@ decodeBook =
     |: ("bookId" := Json.Decode.maybe Json.Decode.string)
     |: ("title" := Json.Decode.string)
     |: ("author" := decodeAuthor)
+    |: ("rating" := Json.Decode.int)
 
 decodeAuthor : Json.Decode.Decoder Author
 decodeAuthor =
@@ -38,6 +40,7 @@ encodeBook x =
     [ ( "bookId", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.bookId )
     , ( "title", Json.Encode.string x.title )
     , ( "author", encodeAuthor x.author )
+    , ( "rating", Json.Encode.int x.rating )
     ]
 
 encodeAuthor : Author -> Json.Encode.Value
