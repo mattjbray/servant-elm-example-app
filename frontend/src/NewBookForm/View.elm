@@ -32,6 +32,7 @@ view address model =
     ]
 
 
+viewFormFields : Signal.Address Action -> Model -> Html.Html
 viewFormFields address model =
   grid
     [ nestedGrid ]

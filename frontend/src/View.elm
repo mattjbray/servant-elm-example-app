@@ -42,6 +42,7 @@ cellStyle =
   ]
 
 
+viewMain : Signal.Address Action -> Model -> List Html.Html
 viewMain address model =
   [ grid
       [ noSpacing ]

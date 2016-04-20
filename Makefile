@@ -8,7 +8,7 @@ backend:
 frontend: frontend/dist/app.js
 
 frontend/dist/app.js: frontend/src/*.elm frontend/src/Generated/*.elm
-	elm-package install -y && mkdir -p $(@D) && elm-make frontend/src/Main.elm --output $@
+	mkdir -p $(@D) && elm-make frontend/src/Main.elm --output $@ --yes --warn
 
 frontend/src/Generated/Api.elm: code-generator/*.hs api/**/*.hs backend
 	mkdir -p $(@D) && stack exec code-generator
