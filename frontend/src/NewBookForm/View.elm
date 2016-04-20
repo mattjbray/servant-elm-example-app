@@ -10,6 +10,7 @@ import Lib.Events exposing (onSubmitPreventDefault)
 import Lib.Style exposing (nestedGrid)
 
 import NewBookForm.Types exposing (..)
+import RatingField.View
 
 
 view : Signal.Address Action -> Model -> Html.Html
@@ -47,7 +48,7 @@ viewFormFields address model =
         [ Textfield.view (Signal.forwardTo address AuthorYearOfBirthFieldAction) model.authorYearOfBirthField [] ]
     , cell
         [ size All 3 ]
-        [ Textfield.view (Signal.forwardTo address RatingFieldAction) model.ratingField [] ]
+        [ RatingField.View.view (Signal.forwardTo address RatingFieldAction) model.ratingField ]
     , cell
         [ size All 3 ]
         [ Button.raised

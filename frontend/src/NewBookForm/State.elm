@@ -10,6 +10,7 @@ import Task
 import Generated.Api exposing (postBooks, Book)
 import Lib.Effects exposing (pure, andThen)
 import NewBookForm.Types exposing (..)
+import RatingField.State
 
 
 init : Model
@@ -29,7 +30,7 @@ init =
         { tfModel | label = Just { text = "Author's YOB", float = True } }
     , rating = Nothing
     , ratingField =
-        { tfModel | label = Just { text = "Rating", float = True } }
+        RatingField.State.init
     , submitButton =
         Button.model True
     , snackbar =
@@ -111,24 +112,13 @@ update action model =
     RatingFieldAction action' ->
       let
         newField =
-          Textfield.update action' model.ratingField
+          RatingField.State.update action' model.ratingField
 
-        ( rating, error ) =
-          case String.toInt newField.value of
-            Err msg ->
-              ( Nothing
-              , Just msg
-              )
-
-            Ok val ->
-              ( Just val
-              , Nothing
-              )
       in
         pure
           { model
-            | ratingField = { newField | error = error }
-            , rating = rating
+            | ratingField = newField
+            , rating = Just newField.rating
           }
 
     FetchBooks ->
