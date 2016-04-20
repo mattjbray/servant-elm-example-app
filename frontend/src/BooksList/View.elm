@@ -3,7 +3,7 @@ module BooksList.View (..) where
 import Html exposing (div, text, p, h2, h4)
 import Material.Button as Button
 import Material.Grid as Grid exposing (grid, cell, size, Device(..))
-import Material.Style as Style
+import Material.Icon as Icon
 
 import Generated.Api exposing (Book)
 import Lib.Style exposing (nestedGrid)
@@ -11,6 +11,7 @@ import Lib.Style exposing (nestedGrid)
 import BooksList.Types exposing (..)
 
 
+view : Signal.Address Action -> Model -> Html.Html
 view address model =
   grid
     []
@@ -45,11 +46,12 @@ viewBook book =
             (book.author.name
               ++ " (b."
               ++ toString book.author.yearOfBirth
-              ++ ") ("
-              ++ toString book.rating
-              ++ " stars) {"
+              ++ ") {"
               ++ Maybe.withDefault "unknown" book.bookId
               ++ "}"
             )
         ]
+    , p
+        []
+        (List.repeat book.rating (Icon.i "star"))
     ]
