@@ -3,9 +3,9 @@ module RatingField.State (..) where
 import RatingField.Types exposing (..)
 
 
-init : Model
-init =
-  { rating = 1
+init : Int -> Model
+init rating =
+  { rating = rating
   , active = Nothing
   }
 

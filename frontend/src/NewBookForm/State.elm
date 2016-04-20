@@ -28,9 +28,9 @@ init =
     , authorYearOfBirth = Nothing
     , authorYearOfBirthField =
         { tfModel | label = Just { text = "Author's YOB", float = True } }
-    , rating = Nothing
+    , rating = Just 3
     , ratingField =
-        RatingField.State.init
+        RatingField.State.init 3
     , submitButton =
         Button.model True
     , snackbar =
