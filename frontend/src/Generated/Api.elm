@@ -1,86 +1,91 @@
-module Generated.Api where
+module Generated.Api exposing (..)
 
-import Json.Decode exposing ((:=))
-import Json.Decode.Extra exposing ((|:))
+import Json.Decode exposing (..)
+import Json.Decode.Pipeline exposing (..)
 import Json.Encode
 import Http
 import String
-import Task
 
-
-type alias Book =
-  { bookId : Maybe String
-  , title : String
-  , author : Author
-  }
 
 type alias Author =
-  { name : String
-  , yearOfBirth : Int
-  }
+    { name : String
+    , yearOfBirth : Int
+    }
 
-decodeBook : Json.Decode.Decoder Book
-decodeBook =
-  Json.Decode.succeed Book
-    |: ("bookId" := Json.Decode.maybe Json.Decode.string)
-    |: ("title" := Json.Decode.string)
-    |: ("author" := decodeAuthor)
-
-decodeAuthor : Json.Decode.Decoder Author
+decodeAuthor : Decoder Author
 decodeAuthor =
-  Json.Decode.succeed Author
-    |: ("name" := Json.Decode.string)
-    |: ("yearOfBirth" := Json.Decode.int)
-
-encodeBook : Book -> Json.Encode.Value
-encodeBook x =
-  Json.Encode.object
-    [ ( "bookId", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.bookId )
-    , ( "title", Json.Encode.string x.title )
-    , ( "author", encodeAuthor x.author )
-    ]
+    decode Author
+        |> required "name" string
+        |> required "yearOfBirth" int
 
 encodeAuthor : Author -> Json.Encode.Value
 encodeAuthor x =
-  Json.Encode.object
-    [ ( "name", Json.Encode.string x.name )
-    , ( "yearOfBirth", Json.Encode.int x.yearOfBirth )
-    ]
+    Json.Encode.object
+        [ ( "name", Json.Encode.string x.name )
+        , ( "yearOfBirth", Json.Encode.int x.yearOfBirth )
+        ]
 
-getBooks : Task.Task Http.Error (List (Book))
+type alias Book =
+    { bookId : Maybe (String)
+    , title : String
+    , author : Author
+    }
+
+decodeBook : Decoder Book
+decodeBook =
+    decode Book
+        |> required "bookId" (maybe string)
+        |> required "title" string
+        |> required "author" decodeAuthor
+
+encodeBook : Book -> Json.Encode.Value
+encodeBook x =
+    Json.Encode.object
+        [ ( "bookId", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.bookId )
+        , ( "title", Json.Encode.string x.title )
+        , ( "author", encodeAuthor x.author )
+        ]
+
+getBooks : Http.Request (List (Book))
 getBooks =
-  let
-    request =
-      { verb =
-          "GET"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "http://localhost:8000/api"
-          ++ "/" ++ "books"
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      (Json.Decode.list decodeBook)
-      (Http.send Http.defaultSettings request)
+    Http.request
+        { method =
+            "GET"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ "http://localhost:8000/api"
+                , "books"
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson (list decodeBook)
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-postBooks : Book -> Task.Task Http.Error (Book)
+postBooks : Book -> Http.Request (Book)
 postBooks body =
-  let
-    request =
-      { verb =
-          "POST"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "http://localhost:8000/api"
-          ++ "/" ++ "books"
-      , body =
-          Http.string (Json.Encode.encode 0 (encodeBook body))
-      }
-  in
-    Http.fromJson
-      decodeBook
-      (Http.send Http.defaultSettings request)
+    Http.request
+        { method =
+            "POST"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ "http://localhost:8000/api"
+                , "books"
+                ]
+        , body =
+            Http.jsonBody (encodeBook body)
+        , expect =
+            Http.expectJson decodeBook
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
