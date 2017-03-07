@@ -46,7 +46,7 @@ homePage =
              , href_ "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
              ]
       script_ [src_ "assets/app.js"] ""
-    body_ (script_ "var elmApp = Elm.fullscreen(Elm.Main)")
+    body_ (script_ "var elmApp = Elm.Main.fullscreen()")
 
 app :: TVar Api.Types.BookDB -> Application
 app bookDb = serve siteApi (server bookDb)

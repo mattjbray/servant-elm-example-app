@@ -1,35 +1,24 @@
-module Main (..) where
+module Main exposing (main)
 
-import Effects exposing (Effects)
 import Html exposing (div, button, text, input, p, h1, h2, form)
-import Html.Attributes exposing (placeholder, value, type', class)
-import Html.Events exposing (onClick)
-import StartApp
+import Html.Attributes exposing (placeholder, value, type_, class)
+import Html.Events exposing (onClick, onInput, onSubmit)
+import Http
+import Result
 import String
 import Task
 import Json.Decode as Json
-import Events exposing (onChange, onEnter, onSubmitPreventDefault)
 import Generated.Api exposing (..)
 
 
-app : StartApp.App Model
-app =
-  StartApp.start
+main : Program Never Model Msg
+main =
+  Html.program
     { init = init
     , view = view
     , update = update
-    , inputs = []
+    , subscriptions = \_ -> Sub.none
     }
-
-
-main : Signal Html.Html
-main =
-  app.html
-
-
-port tasks : Signal (Task.Task Effects.Never ())
-port tasks =
-  app.tasks
 
 
 type alias Model =
@@ -40,9 +29,9 @@ type alias Model =
   }
 
 
-init : ( Model, Effects Action )
+init : ( Model, Cmd Msg )
 init =
-  fetchBooks initModel
+  ( initModel, fetchBooks )
 
 
 initModel : Model
@@ -54,23 +43,23 @@ initModel =
   }
 
 
-type Action
+type Msg
   = FetchBooks
-  | SetBooks (Maybe (List Book))
+  | SetBooks (Result Http.Error (List Book))
   | SetNewBookTitle String
   | SetNewBookAuthorName String
   | SetNewBookAuthorYearOfBirth Int
   | CreateBook
 
 
-update : Action -> Model -> ( Model, Effects Action )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
   case action of
     FetchBooks ->
-      fetchBooks model
+      ( model, fetchBooks )
 
     SetBooks mNewBooks ->
-      pure { model | books = Maybe.withDefault model.books mNewBooks }
+      pure { model | books = Result.withDefault model.books mNewBooks }
 
     SetNewBookTitle title ->
       pure { model | newBookTitle = title }
@@ -92,22 +81,16 @@ update action model =
                 , yearOfBirth = model.newBookAuthorYearOfBirth
                 }
             }
-            |> Task.toMaybe
-            |> Task.map (\_ -> FetchBooks)
-            |> Effects.task
+            |> Http.send (\_ -> FetchBooks)
         )
       else
         pure model
 
 
-fetchBooks : Model -> ( Model, Effects Action )
-fetchBooks model =
-  ( model
-  , getBooks
-      |> Task.toMaybe
-      |> Effects.task
-      |> Effects.map SetBooks
-  )
+fetchBooks : Cmd Msg
+fetchBooks =
+  getBooks
+    |> Http.send SetBooks
 
 
 validate : Model -> Bool
@@ -115,17 +98,17 @@ validate { newBookTitle, newBookAuthorName } =
   List.all (not << String.isEmpty) [ newBookTitle, newBookAuthorName ]
 
 
-view : Signal.Address Action -> Model -> Html.Html
-view address model =
+view : Model -> Html.Html Msg
+view model =
   div
     [ class "container-fluid" ]
     [ h1 [] [ text "Books" ]
-    , viewBookForm address model
-    , viewBookList address model
+    , viewBookForm model
+    , viewBookList model
     ]
 
 
-viewBookList address model =
+viewBookList model =
   div
     []
     [ h2 [] [ text "All books" ]
@@ -133,15 +116,15 @@ viewBookList address model =
         [ class "row" ]
         (List.map viewBook model.books)
     , button
-        [ onClick address FetchBooks
+        [ onClick FetchBooks
         , class "btn btn-default"
         ]
         [ text "Refresh book list" ]
     ]
 
 
-viewBookForm : Signal.Address Action -> Model -> Html.Html
-viewBookForm address model =
+viewBookForm : Model -> Html.Html Msg
+viewBookForm model =
   div
     [ class "row" ]
     [ div
@@ -149,7 +132,7 @@ viewBookForm address model =
         [ h2 [] [ text "Create a book" ]
         , form
             [ class "form-inline"
-            , onSubmitPreventDefault address CreateBook
+            , onSubmit CreateBook
             ]
             [ div
                 [ class "form-group" ]
@@ -157,7 +140,7 @@ viewBookForm address model =
                     [ placeholder "Title"
                     , class "form-control"
                     , value model.newBookTitle
-                    , onChange address SetNewBookTitle
+                    , onInput SetNewBookTitle
                     ]
                     []
                 ]
@@ -167,7 +150,7 @@ viewBookForm address model =
                     [ placeholder "Author"
                     , class "form-control"
                     , value model.newBookAuthorName
-                    , onChange address SetNewBookAuthorName
+                    , onInput SetNewBookAuthorName
                     ]
                     []
                 ]
@@ -177,13 +160,13 @@ viewBookForm address model =
                     [ placeholder "Date of birth"
                     , class "form-control"
                     , value (toString model.newBookAuthorYearOfBirth)
-                    , type' "number"
-                    , onChange address (SetNewBookAuthorYearOfBirth << Maybe.withDefault 0 << Result.toMaybe << String.toInt)
+                    , type_ "number"
+                    , onInput (SetNewBookAuthorYearOfBirth << Maybe.withDefault 0 << Result.toMaybe << String.toInt)
                     ]
                     []
                 ]
             , button
-                [ type' "submit"
+                [ type_ "submit"
                 , class "btn btn-default"
                 ]
                 [ text "Create book" ]
@@ -192,7 +175,7 @@ viewBookForm address model =
     ]
 
 
-viewBook : Book -> Html.Html
+viewBook : Book -> Html.Html Msg
 viewBook book =
   div
     [ class "col-lg-3" ]
@@ -220,6 +203,6 @@ viewBook book =
     ]
 
 
-pure : a -> ( a, Effects b )
+pure : a -> ( a, Cmd b )
 pure model =
-  ( model, Effects.none )
+  ( model, Cmd.none )
