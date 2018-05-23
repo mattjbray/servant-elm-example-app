@@ -59,19 +59,20 @@ Components in detail
 The definition of our API lives in [api/Api/Types.hs](api/Api/Types.hs). It's
 pretty simple. You can:
 
-* `POST /counter/inc`
-* `GET /counter`
+* `POST /books`
+* `GET /books`
 
-Both endpoints return a representation of the counter in JSON.
+The first returns a JSON representation of a book, and the second returns a list
+of such representations.
 
-The implementation lives in [api/Api/Server.hs](api/Api/Server.hs). The counter
-state lives in a `TVar Int`, which must be supplied by the user.
+The implementation lives in [api/Api/Server.hs](api/Api/Server.hs). The book database
+state lives in a `TVar BookDB`, which must be supplied by the user.
 
 
 ### The backend
 
 [backend/Main.hs](backend/Main.hs) defines a type called `SiteApi`, which wraps
-our counter API under `/api`, provides an index route and serves assets under
+our book API under `/api`, provides an index route and serves assets under
 `/assets`.
 
 The `server` function implements this `SiteApi`. It wraps the API server
@@ -81,7 +82,7 @@ a home page.
 The home page simply sets a page title and bootstraps our Elm app (which will be
 built to `frontend/dist/app.js`).
 
-The `main` function creates a new `TVar` for our counter API and starts the app
+The `main` function creates a new `TVar` for our book database API and starts the app
 on port 8000.
 
 
@@ -102,17 +103,16 @@ servant-elm's `elmJSWith` with some options:
 ### The frontend
 
 In [frontend/src/Main.elm](frontend/src/Main.elm) we import the `Generated.Api`
-module. Our Elm app uses the `StartApp` module (see
+module. Our Elm app uses the `Html` module (see
 [The Elm Architecture](https://github.com/evancz/elm-architecture-tutorial/) for
 details).
 
-The functions `fetchCounter` and `incCounter` demonstrate how the generated Elm
-functions can be used. Each generated function takes a `Json.Decode.Decoder`
-which is responsable for marshalling the Api's JSON response into an Elm value.
-In our case this is just `Json.Decode.int`.
+The functions `fetchBooks` and the use of `postBooks` in `update` demonstrate
+how the generated Elm functions can be used. The generated functions `getBooks`
+and `postBooks` have types `Http.Request (List (Book))` and `Book ->
+Http.Request (Book)` respectively. The `Http.Request a` type is passed to the
+`Http.send` function to actually perform the requests. 
 
-The return value of the generated functions is `Task Http.Error a`, which in
-this example are transformed to `Effects (Maybe Int)` for use with `StartApp`.
 
 
 TODO
